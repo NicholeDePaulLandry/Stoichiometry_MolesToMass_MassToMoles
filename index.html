@@ -9,6 +9,7 @@
         body {
             font-family: 'Times New Roman', Times, serif;
             background-color: #f3f4f6;
+            font-size: 16px; /* 16 point equivalent base */
         }
 
         .correct-box {
@@ -25,33 +26,33 @@
         .input-triple {
             display: flex;
             flex-direction: row;
-            gap: 4px;
+            gap: 6px;
             align-items: center;
             justify-content: center;
         }
         .input-triple input {
-            font-size: 0.85rem;
-            padding: 4px;
+            font-size: 1rem;
+            padding: 6px;
             text-align: center;
             border: 1px solid #cbd5e1;
-            border-radius: 2px;
+            border-radius: 4px;
         }
-        .val-box { width: 70px; font-weight: bold; }
-        .unit-box { width: 50px; }
+        .val-box { width: 90px; font-weight: bold; }
+        .unit-box { width: 60px; }
         
         .label-box { 
-            width: 85px; 
-            min-height: 30px; 
+            width: 100px; 
+            min-height: 38px; 
             background: white; 
             border: 1px solid #cbd5e1; 
-            border-radius: 2px;
+            border-radius: 4px;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
             white-space: nowrap;
-            font-size: 0.85rem;
-            padding: 0 4px;
+            font-size: 1rem;
+            padding: 0 6px;
         }
         .label-box:focus {
             outline: none;
@@ -63,7 +64,7 @@
             display: flex;
             align-items: center;
             overflow-x: auto;
-            padding-bottom: 10px;
+            padding: 10px 0;
         }
         .railroad-grid {
             display: inline-grid;
@@ -73,22 +74,22 @@
         }
         .railroad-cell {
             border-right: 2px solid #1e293b;
-            padding: 15px 20px;
+            padding: 20px 25px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-width: 220px;
+            min-width: 280px;
         }
         .railroad-cell:last-child { border-right: none; }
-        .divider { width: 100%; height: 2px; background-color: #1e293b; margin: 8px 0; }
+        .divider { width: 100%; height: 2px; background-color: #1e293b; margin: 12px 0; }
 
         .cell-disabled {
             background-color: #e2e8f0;
             background-image: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(255,255,255,.5) 5px, rgba(255,255,255,.5) 10px);
-            min-height: 38px;
+            min-height: 42px;
             width: 100%;
-            border-radius: 2px;
+            border-radius: 4px;
         }
         
         .mm-table {
@@ -96,56 +97,62 @@
             border-collapse: collapse;
             background-color: white;
             border: 1px solid #334155;
-            font-size: 0.9rem;
+            font-size: 1rem;
         }
         .mm-table th, .mm-table td {
             border: 1px solid #cbd5e1;
-            padding: 6px;
+            padding: 10px;
             text-align: center;
         }
         
         input:focus, select:focus { outline: none; border: 1px solid #3b82f6; box-shadow: 0 0 0 1px #3b82f6; }
 
-        .ratio-input { width: 40px !important; font-weight: bold; border: 1px solid #cbd5e1; border-radius: 2px; }
-        .ratio-box { border: 1px solid #e2e8f0; padding: 10px; border-radius: 4px; background: white; }
+        .ratio-input { width: 50px !important; font-weight: bold; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 1rem; }
+        .ratio-box { border: 1px solid #e2e8f0; padding: 12px; border-radius: 6px; background: white; font-size: 1rem; }
         
         .feedback {
-            margin-top: 12px;
+            margin-top: 15px;
             font-weight: bold;
-            padding: 10px;
-            border-radius: 4px;
+            padding: 12px;
+            border-radius: 6px;
             display: none;
+            font-size: 1.1rem;
         }
 
         sub { vertical-align: sub; font-size: 0.8em; line-height: 0; }
         
         select {
             background-color: white;
-            padding: 2px 4px;
-            border-radius: 4px;
+            padding: 4px 8px;
+            border-radius: 6px;
             border: 1px solid #cbd5e1;
             font-style: italic;
+            font-size: 1rem;
         }
+
+        h1 { font-size: 2rem !important; }
+        h2 { font-size: 1.5rem !important; }
+        p, span, label { font-size: 1rem; }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
-    <div class="max-w-6xl mx-auto bg-white shadow-xl p-8 border-t-4 border-blue-900">
-        <div class="flex justify-between items-center mb-4 border-b pb-4">
+    <div class="max-w-6xl mx-auto bg-white shadow-xl p-8 border-t-8 border-blue-900">
+        <div class="flex justify-between items-center mb-6 border-b-2 pb-6">
             <div>
-                <h1 class="text-2xl font-bold text-blue-900">Stoichiometry: Moles to Mass and Mass to Moles</h1>
+                <h1 class="font-bold text-blue-900">Stoichiometry: Moles to Mass and Mass to Moles</h1>
             </div>
-            <button onclick="location.reload()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded text-sm font-bold">Generate New Problems</button>
+            <button onclick="location.reload()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded text-base font-bold">Generate New Problems</button>
         </div>
 
         <!-- PROBLEM 1 -->
-        <section id="p1-section" class="mb-12 border-b pb-12">
-            <h2 class="text-xl font-bold mb-4 text-blue-800">Part A: Moles-to-Mass</h2>
-            <div class="mb-6">
-                <p class="font-bold mb-2">1. Balance the reaction and identify the type:</p>
-                <div id="p1-equation" class="flex items-center gap-2 flex-wrap mb-4 text-lg"></div>
+        <section id="p1-section" class="mb-16 border-b-2 pb-16">
+            <h2 class="font-bold mb-6 text-blue-800">Part A: Moles-to-Mass</h2>
+            <div class="mb-8">
+                <p class="font-bold mb-4">1. Balance the reaction and identify the type:</p>
+                <div id="p1-equation" class="flex items-center gap-3 flex-wrap mb-6 text-xl"></div>
                 <p>Reaction Type: 
-                    <select id="p1-type" class="w-64">
+                    <select id="p1-type" class="w-72">
                         <option value="">-- Select Type --</option>
                         <option value="Synthesis">Synthesis</option>
                         <option value="Decomposition">Decomposition</option>
@@ -155,32 +162,32 @@
                     </select>
                 </p>
             </div>
-            <div class="mb-6">
-                <p class="font-bold mb-2">2. Mole Ratios:</p>
-                <div id="p1-ratios" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
+            <div class="mb-8">
+                <p class="font-bold mb-4">2. Mole Ratios:</p>
+                <div id="p1-ratios" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </div>
-            <div class="mb-6">
-                <p id="p1-prompt" class="font-bold text-lg text-blue-900 mb-4 bg-blue-50 p-3 rounded border-l-4 border-blue-900"></p>
-                <div id="p1-mm-container" class="mb-6 p-4 bg-slate-50 border rounded"></div>
-                <p class="font-bold text-sm text-gray-500 uppercase mb-2">Dimensional Analysis</p>
+            <div class="mb-8">
+                <p id="p1-prompt" class="font-bold text-xl text-blue-900 mb-6 bg-blue-50 p-5 rounded border-l-8 border-blue-900"></p>
+                <div id="p1-mm-container" class="mb-8 p-6 bg-slate-50 border rounded-lg"></div>
+                <p class="font-bold text-base text-gray-500 uppercase mb-4 tracking-wide">Dimensional Analysis</p>
                 <div class="railroad-container"><div class="railroad-grid" id="p1-tracks"></div></div>
-                <div class="flex flex-col md:flex-row md:items-center gap-4 mt-8 pt-4 border-t">
-                    <span class="font-bold text-lg">Final Answer:</span>
+                <div class="flex flex-col md:flex-row md:items-center gap-6 mt-10 pt-6 border-t-2">
+                    <span class="font-bold text-xl">Final Answer:</span>
                     <div id="p1-ans-container"></div>
-                    <button onclick="checkProblem('p1')" class="md:ml-auto bg-blue-900 text-white px-8 py-3 rounded font-bold hover:bg-blue-800 transition">Check Part A</button>
+                    <button onclick="checkProblem('p1')" class="md:ml-auto bg-blue-900 text-white px-10 py-4 rounded-lg font-bold hover:bg-blue-800 transition text-lg shadow-md">Check Part A</button>
                 </div>
                 <div id="p1-feedback" class="feedback"></div>
             </div>
         </section>
 
         <!-- PROBLEM 2 -->
-        <section id="p2-section" class="mb-12">
-            <h2 class="text-xl font-bold mb-4 text-green-800">Part B: Mass-to-Moles</h2>
-            <div class="mb-6">
-                <p class="font-bold mb-2">1. Balance the reaction and identify the type:</p>
-                <div id="p2-equation" class="flex items-center gap-2 flex-wrap mb-4 text-lg"></div>
+        <section id="p2-section" class="mb-16">
+            <h2 class="font-bold mb-6 text-green-800">Part B: Mass-to-Moles</h2>
+            <div class="mb-8">
+                <p class="font-bold mb-4">1. Balance the reaction and identify the type:</p>
+                <div id="p2-equation" class="flex items-center gap-3 flex-wrap mb-6 text-xl"></div>
                 <p>Reaction Type: 
-                    <select id="p2-type" class="w-64">
+                    <select id="p2-type" class="w-72">
                         <option value="">-- Select Type --</option>
                         <option value="Synthesis">Synthesis</option>
                         <option value="Decomposition">Decomposition</option>
@@ -190,19 +197,19 @@
                     </select>
                 </p>
             </div>
-            <div class="mb-6">
-                <p class="font-bold mb-2">2. Mole Ratios:</p>
-                <div id="p2-ratios" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
+            <div class="mb-8">
+                <p class="font-bold mb-4">2. Mole Ratios:</p>
+                <div id="p2-ratios" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </div>
-            <div class="mb-6">
-                <p id="p2-prompt" class="font-bold text-lg text-green-900 mb-4 bg-green-50 p-3 rounded border-l-4 border-green-900"></p>
-                <div id="p2-mm-container" class="mb-6 p-4 bg-slate-50 border rounded"></div>
-                <p class="font-bold text-sm text-gray-500 uppercase mb-2">Dimensional Analysis</p>
+            <div class="mb-8">
+                <p id="p2-prompt" class="font-bold text-xl text-green-900 mb-6 bg-green-50 p-5 rounded border-l-8 border-green-900"></p>
+                <div id="p2-mm-container" class="mb-8 p-6 bg-slate-50 border rounded-lg"></div>
+                <p class="font-bold text-base text-gray-500 uppercase mb-4 tracking-wide">Dimensional Analysis</p>
                 <div class="railroad-container"><div class="railroad-grid" id="p2-tracks"></div></div>
-                <div class="flex flex-col md:flex-row md:items-center gap-4 mt-8 pt-4 border-t">
-                    <span class="font-bold text-lg">Final Answer:</span>
+                <div class="flex flex-col md:flex-row md:items-center gap-6 mt-10 pt-6 border-t-2">
+                    <span class="font-bold text-xl">Final Answer:</span>
                     <div id="p2-ans-container"></div>
-                    <button onclick="checkProblem('p2')" class="md:ml-auto bg-green-900 text-white px-8 py-3 rounded font-bold hover:bg-green-800 transition">Check Part B</button>
+                    <button onclick="checkProblem('p2')" class="md:ml-auto bg-green-900 text-white px-10 py-4 rounded-lg font-bold hover:bg-green-800 transition text-lg shadow-md">Check Part B</button>
                 </div>
                 <div id="p2-feedback" class="feedback"></div>
             </div>
@@ -352,9 +359,9 @@
             const split = Math.floor(data.equation.length/2);
             eqDiv.innerHTML = ""; 
             data.equation.forEach((formula, i) => {
-                if(i === split) eqDiv.innerHTML += `<span class="px-2 font-bold">→</span>`;
-                else if(i > 0) eqDiv.innerHTML += `<span class="px-1">+</span>`;
-                eqDiv.innerHTML += `<input type="number" id="${pid}-c${i}" class="w-8 font-bold text-center border-b"> <span>${formatSub(formula)}</span>`;
+                if(i === split) eqDiv.innerHTML += `<span class="px-3 font-bold">→</span>`;
+                else if(i > 0) eqDiv.innerHTML += `<span class="px-2">+</span>`;
+                eqDiv.innerHTML += `<input type="number" id="${pid}-c${i}" class="w-12 font-bold text-center border-b-2"> <span>${formatSub(formula)}</span>`;
             });
 
             const ratioDiv = document.getElementById(`${pid}-ratios`);
@@ -363,13 +370,13 @@
                 for(let j=0; j<data.equation.length; j++) {
                     if(i===j) continue;
                     ratioDiv.innerHTML += `
-                        <div class="ratio-box text-xs flex flex-col items-center">
-                            <div class="flex items-center gap-1">
+                        <div class="ratio-box flex flex-col items-center">
+                            <div class="flex items-center gap-2">
                                 <input type="number" id="${pid}-r-${i}-${j}-n" class="ratio-input">
                                 <span>mol ${formatSub(data.equation[i])}</span>
                             </div>
-                            <div class="w-full h-px bg-gray-400 my-1"></div>
-                            <div class="flex items-center gap-1">
+                            <div class="w-full h-px bg-gray-400 my-2"></div>
+                            <div class="flex items-center gap-2">
                                 <input type="number" id="${pid}-r-${i}-${j}-d" class="ratio-input">
                                 <span>mol ${formatSub(data.equation[j])}</span>
                             </div>
@@ -388,13 +395,22 @@
             const mmData = data.molarMasses[mmFormula];
             const mmContainer = document.getElementById(`${pid}-mm-container`);
             mmContainer.innerHTML = `
-                <p class="font-bold mb-2">Molar Mass of ${formatSub(mmFormula)}:</p>
+                <p class="font-bold mb-4 text-lg">Molar Mass Worksheet for ${formatSub(mmFormula)}:</p>
                 <table class="mm-table">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th>Element</th>
+                            <th>Atomic Mass</th>
+                            <th></th>
+                            <th>Count</th>
+                            <th>Total Mass</th>
+                        </tr>
+                    </thead>
                     <tbody id="${pid}-mm-body"></tbody>
                     <tfoot>
                         <tr class="font-bold bg-gray-100">
-                            <td colspan="4" class="text-right">Total Molar Mass:</td>
-                            <td><input type="number" id="${pid}-mm-total-v" class="w-20 font-bold" step="0.01"> <input type="text" id="${pid}-mm-total-u" class="w-16 font-bold text-center"></td>
+                            <td colspan="4" class="text-right">Molecular Weight:</td>
+                            <td><input type="number" id="${pid}-mm-total-v" class="w-24 font-bold border-b text-center" step="0.01"> <input type="text" id="${pid}-mm-total-u" class="w-16 font-bold text-center border-b"></td>
                         </tr>
                     </tfoot>
                 </table>
@@ -404,10 +420,10 @@
                 tbody.innerHTML += `
                     <tr>
                         <td class="font-bold bg-gray-50">${formatSub(p.n)}</td>
-                        <td><input type="number" id="${pid}-mm-p${idx}-w" class="w-16 border" step="0.01"> <input type="text" id="${pid}-mm-p${idx}-u" class="w-12 border text-xs"></td>
+                        <td><input type="number" id="${pid}-mm-p${idx}-w" class="w-20 border text-center" step="0.01"> <input type="text" id="${pid}-mm-p${idx}-u" class="w-14 border text-center text-sm"></td>
                         <td>×</td>
-                        <td><input type="number" id="${pid}-mm-p${idx}-c" class="w-10 border"></td>
-                        <td>= <input type="number" id="${pid}-mm-p${idx}-t" class="w-20 border font-bold" step="0.01"> <input type="text" id="${pid}-mm-p${idx}-tu" class="w-12 border text-xs"></td>
+                        <td><input type="number" id="${pid}-mm-p${idx}-c" class="w-14 border text-center"></td>
+                        <td>= <input type="number" id="${pid}-mm-p${idx}-t" class="w-24 border font-bold text-center" step="0.01"> <input type="text" id="${pid}-mm-p${idx}-tu" class="w-14 border text-center text-sm"></td>
                     </tr>
                 `;
             });
@@ -418,7 +434,7 @@
                 <div class="railroad-cell">${createTriple(`${pid}-t2-n`)}<div class="divider"></div>${createTriple(`${pid}-t2-d`)}</div>
             `;
             document.getElementById(`${pid}-ans-container`).innerHTML = `
-                <div class="input-triple scale-110 origin-left">
+                <div class="input-triple scale-125 origin-left ml-4">
                     <input type="number" id="${pid}-ans-v" class="val-box" step="0.001">
                     <input type="text" id="${pid}-ans-u" class="unit-box">
                     <div contenteditable="true" id="${pid}-ans-l" class="label-box formula-input" oninput="handleFormulaInput(this)"></div>
@@ -442,9 +458,14 @@
                 return ex === 'mol' ? (u === 'mol' || u === 'moles') : (ex === 'g' ? (u === 'g' || u === 'grams') : u === ex);
             };
             const checkTriple = (baseId, expV, expU, expL) => {
-                const v = parseFloat(document.getElementById(`${baseId}-v`).value);
-                const u = document.getElementById(`${baseId}-u`).value;
-                const l = cleanFormula(document.getElementById(`${baseId}-l`).innerText);
+                const vEl = document.getElementById(`${baseId}-v`);
+                const uEl = document.getElementById(`${baseId}-u`);
+                const lEl = document.getElementById(`${baseId}-l`);
+                
+                const v = parseFloat(vEl.value);
+                const u = uEl.value;
+                const l = cleanFormula(lEl.innerText);
+
                 setStyle(`${baseId}-v`, Math.abs(v - expV) < (expV * 0.02 || 0.1));
                 setStyle(`${baseId}-u`, compareUnits(u, expU));
                 setStyle(`${baseId}-l`, l === cleanFormula(expL));
@@ -493,7 +514,7 @@
             const fb = document.getElementById(`${pid}-feedback`);
             fb.style.display = 'block';
             fb.className = score === total ? "feedback bg-green-100 text-green-800 border-2" : "feedback bg-red-100 text-red-800 border-2";
-            fb.innerHTML = score === total ? "✅ Correct! Total score: " + score + "/" + total : "❌ Mistakes found. Correct inputs: " + score + "/" + total;
+            fb.innerHTML = score === total ? "✅ Excellent! Everything is correct. Total score: " + score + "/" + total : "❌ Check the highlighted boxes. Correct inputs: " + score + "/" + total;
         }
 
         window.onload = init;
