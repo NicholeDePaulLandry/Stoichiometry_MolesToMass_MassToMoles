@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stoichiometry: Moles to Mass and Mass to Moles</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            background-color: #f3f4f6;
+        }
+
+        .correct-box {
+            border: 2px solid #16a34a !important;
+            background-color: #f0fdf4 !important;
+            color: #16a34a;
+        }
+        .incorrect-box {
+            border: 2px solid #dc2626 !important;
+            background-color: #fef2f2 !important;
+            color: #dc2626;
+        }
+
+        .input-triple {
+            display: flex;
+            flex-direction: row;
+            gap: 4px;
+            align-items: center;
+            justify-content: center;
+        }
+        .input-triple input {
+            font-size: 0.85rem;
+            padding: 4px;
+            text-align: center;
+            border: 1px solid #cbd5e1;
+            border-radius: 2px;
+        }
+        .val-box { width: 70px; font-weight: bold; }
+        .unit-box { width: 50px; }
+        
+        .label-box { 
+            width: 85px; 
+            min-height: 30px; 
+            background: white; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            white-space: nowrap;
+            font-size: 0.85rem;
+            padding: 0 4px;
+        }
+        .label-box:focus {
+            outline: none;
+            border: 1px solid #3b82f6;
+            box-shadow: 0 0 0 1px #3b82f6;
+        }
+
+        .railroad-container {
+            display: flex;
+            align-items: center;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        .railroad-grid {
+            display: inline-grid;
+            grid-template-columns: repeat(3, auto);
+            border: 2px solid #1e293b;
+            background-color: white;
+        }
+        .railroad-cell {
+            border-right: 2px solid #1e293b;
+            padding: 15px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-width: 220px;
+        }
+        .railroad-cell:last-child { border-right: none; }
+        .divider { width: 100%; height: 2px; background-color: #1e293b; margin: 8px 0; }
+
+        .cell-disabled {
+            background-color: #e2e8f0;
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(255,255,255,.5) 5px, rgba(255,255,255,.5) 10px);
+            min-height: 38px;
+            width: 100%;
+            border-radius: 2px;
+        }
+        
+        .mm-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            border: 1px solid #334155;
+            font-size: 0.9rem;
+        }
+        .mm-table th, .mm-table td {
+            border: 1px solid #cbd5e1;
+            padding: 6px;
+            text-align: center;
+        }
+        
+        input:focus, select:focus { outline: none; border: 1px solid #3b82f6; box-shadow: 0 0 0 1px #3b82f6; }
+
+        .ratio-input { width: 40px !important; font-weight: bold; border: 1px solid #cbd5e1; border-radius: 2px; }
+        .ratio-box { border: 1px solid #e2e8f0; padding: 10px; border-radius: 4px; background: white; }
+        
+        .feedback {
+            margin-top: 12px;
+            font-weight: bold;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+
+        sub { vertical-align: sub; font-size: 0.8em; line-height: 0; }
+        
+        select {
+            background-color: white;
+            padding: 2px 4px;
+            border-radius: 4px;
+            border: 1px solid #cbd5e1;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-6xl mx-auto bg-white shadow-xl p-8 border-t-4 border-blue-900">
+        <div class="flex justify-between items-center mb-4 border-b pb-4">
+            <div>
+                <h1 class="text-2xl font-bold text-blue-900">Stoichiometry: Moles to Mass and Mass to Moles</h1>
+            </div>
+            <button onclick="location.reload()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded text-sm font-bold">Generate New Problems</button>
+        </div>
+
+        <!-- PROBLEM 1 -->
+        <section id="p1-section" class="mb-12 border-b pb-12">
+            <h2 class="text-xl font-bold mb-4 text-blue-800">Part A: Moles-to-Mass</h2>
+            <div class="mb-6">
+                <p class="font-bold mb-2">1. Balance the reaction and identify the type:</p>
+                <div id="p1-equation" class="flex items-center gap-2 flex-wrap mb-4 text-lg"></div>
+                <p>Reaction Type: 
+                    <select id="p1-type" class="w-64">
+                        <option value="">-- Select Type --</option>
+                        <option value="Synthesis">Synthesis</option>
+                        <option value="Decomposition">Decomposition</option>
+                        <option value="Single Replacement">Single Replacement</option>
+                        <option value="Double Replacement">Double Replacement</option>
+                        <option value="Combustion">Combustion</option>
+                    </select>
+                </p>
+            </div>
+            <div class="mb-6">
+                <p class="font-bold mb-2">2. Mole Ratios:</p>
+                <div id="p1-ratios" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
+            </div>
+            <div class="mb-6">
+                <p id="p1-prompt" class="font-bold text-lg text-blue-900 mb-4 bg-blue-50 p-3 rounded border-l-4 border-blue-900"></p>
+                <div id="p1-mm-container" class="mb-6 p-4 bg-slate-50 border rounded"></div>
+                <p class="font-bold text-sm text-gray-500 uppercase mb-2">Dimensional Analysis</p>
+                <div class="railroad-container"><div class="railroad-grid" id="p1-tracks"></div></div>
+                <div class="flex flex-col md:flex-row md:items-center gap-4 mt-8 pt-4 border-t">
+                    <span class="font-bold text-lg">Final Answer:</span>
+                    <div id="p1-ans-container"></div>
+                    <button onclick="checkProblem('p1')" class="md:ml-auto bg-blue-900 text-white px-8 py-3 rounded font-bold hover:bg-blue-800 transition">Check Part A</button>
+                </div>
+                <div id="p1-feedback" class="feedback"></div>
+            </div>
+        </section>
+
+        <!-- PROBLEM 2 -->
+        <section id="p2-section" class="mb-12">
+            <h2 class="text-xl font-bold mb-4 text-green-800">Part B: Mass-to-Moles</h2>
+            <div class="mb-6">
+                <p class="font-bold mb-2">1. Balance the reaction and identify the type:</p>
+                <div id="p2-equation" class="flex items-center gap-2 flex-wrap mb-4 text-lg"></div>
+                <p>Reaction Type: 
+                    <select id="p2-type" class="w-64">
+                        <option value="">-- Select Type --</option>
+                        <option value="Synthesis">Synthesis</option>
+                        <option value="Decomposition">Decomposition</option>
+                        <option value="Single Replacement">Single Replacement</option>
+                        <option value="Double Replacement">Double Replacement</option>
+                        <option value="Combustion">Combustion</option>
+                    </select>
+                </p>
+            </div>
+            <div class="mb-6">
+                <p class="font-bold mb-2">2. Mole Ratios:</p>
+                <div id="p2-ratios" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
+            </div>
+            <div class="mb-6">
+                <p id="p2-prompt" class="font-bold text-lg text-green-900 mb-4 bg-green-50 p-3 rounded border-l-4 border-green-900"></p>
+                <div id="p2-mm-container" class="mb-6 p-4 bg-slate-50 border rounded"></div>
+                <p class="font-bold text-sm text-gray-500 uppercase mb-2">Dimensional Analysis</p>
+                <div class="railroad-container"><div class="railroad-grid" id="p2-tracks"></div></div>
+                <div class="flex flex-col md:flex-row md:items-center gap-4 mt-8 pt-4 border-t">
+                    <span class="font-bold text-lg">Final Answer:</span>
+                    <div id="p2-ans-container"></div>
+                    <button onclick="checkProblem('p2')" class="md:ml-auto bg-green-900 text-white px-8 py-3 rounded font-bold hover:bg-green-800 transition">Check Part B</button>
+                </div>
+                <div id="p2-feedback" class="feedback"></div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const reactionLibrary = [
+            {
+                equation: ['Cr2O3', 'Ca(OH)2', 'Cr(OH)3', 'CaO'],
+                coeffs: [1, 3, 2, 3],
+                type: 'Double Replacement',
+                molarMasses: { 
+                    'Ca(OH)2': { total: 74.1, parts: [{n: 'Ca', c: 1, w: 40.08}, {n: 'O', c: 2, w: 16.00}, {n: 'H', c: 2, w: 1.01}] },
+                    'Cr(OH)3': { total: 103.02, parts: [{n: 'Cr', c: 1, w: 52.00}, {n: 'O', c: 3, w: 16.00}, {n: 'H', c: 3, w: 1.01}] },
+                    'CaO': { total: 56.08, parts: [{n: 'Ca', c: 1, w: 40.08}, {n: 'O', c: 1, w: 16.00}] }
+                }
+            },
+            {
+                equation: ['Li', 'O2', 'Li2O'],
+                coeffs: [4, 1, 2],
+                type: 'Synthesis',
+                molarMasses: { 
+                    'Li': { total: 6.94, parts: [{n: 'Li', c: 1, w: 6.94}] },
+                    'O2': { total: 32.00, parts: [{n: 'O', c: 2, w: 16.00}] },
+                    'Li2O': { total: 29.88, parts: [{n: 'Li', c: 2, w: 6.94}, {n: 'O', c: 1, w: 16.00}] }
+                }
+            },
+            {
+                equation: ['CH4', 'O2', 'CO2', 'H2O'],
+                coeffs: [1, 2, 1, 2],
+                type: 'Combustion',
+                molarMasses: {
+                    'CH4': { total: 16.05, parts: [{n: 'C', c: 1, w: 12.01}, {n: 'H', c: 4, w: 1.01}] },
+                    'O2': { total: 32.00, parts: [{n: 'O', c: 2, w: 16.00}] },
+                    'CO2': { total: 44.01, parts: [{n: 'C', c: 1, w: 12.01}, {n: 'O', c: 2, w: 16.00}] },
+                    'H2O': { total: 18.02, parts: [{n: 'H', c: 2, w: 1.01}, {n: 'O', c: 1, w: 16.00}] }
+                }
+            },
+            {
+                equation: ['Al', 'HCl', 'AlCl3', 'H2'],
+                coeffs: [2, 6, 2, 3],
+                type: 'Single Replacement',
+                molarMasses: {
+                    'Al': { total: 26.98, parts: [{n: 'Al', c: 1, w: 26.98}] },
+                    'HCl': { total: 36.46, parts: [{n: 'H', c: 1, w: 1.01}, {n: 'Cl', c: 1, w: 35.45}] },
+                    'AlCl3': { total: 133.33, parts: [{n: 'Al', c: 1, w: 26.98}, {n: 'Cl', c: 3, w: 35.45}] },
+                    'H2': { total: 2.02, parts: [{n: 'H', c: 2, w: 1.01}] }
+                }
+            },
+            {
+                equation: ['HgO', 'Hg', 'O2'],
+                coeffs: [2, 2, 1],
+                type: 'Decomposition',
+                molarMasses: {
+                    'HgO': { total: 216.59, parts: [{n: 'Hg', c: 1, w: 200.59}, {n: 'O', c: 1, w: 16.00}] },
+                    'Hg': { total: 200.59, parts: [{n: 'Hg', c: 1, w: 200.59}] },
+                    'O2': { total: 32.00, parts: [{n: 'O', c: 2, w: 16.00}] }
+                }
+            }
+        ];
+
+        let state = { p1: {}, p2: {} };
+
+        function formatSub(s) { 
+            return s ? s.replace(/(\d+)/g, '<sub>$1</sub>') : ""; 
+        }
+
+        function handleFormulaInput(el) {
+            const selection = window.getSelection();
+            if (!selection.rangeCount) return;
+            const range = selection.getRangeAt(0);
+            const preRange = range.cloneRange();
+            preRange.selectNodeContents(el);
+            preRange.setEnd(range.startContainer, range.startOffset);
+            let offset = preRange.toString().length;
+
+            const text = el.innerText;
+            const formattedHtml = text.replace(/([A-Za-z\)])(\d+)/g, '$1<sub>$2</sub>');
+
+            if (el.innerHTML !== formattedHtml) {
+                el.innerHTML = formattedHtml;
+                const newRange = document.createRange();
+                const textNodes = [];
+                const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
+                let node;
+                while(node = walk.nextNode()) textNodes.push(node);
+                let currentOffset = 0;
+                let found = false;
+                for (let n of textNodes) {
+                    if (currentOffset + n.length >= offset) {
+                        newRange.setStart(n, offset - currentOffset);
+                        newRange.collapse(true);
+                        found = true;
+                        break;
+                    }
+                    currentOffset += n.length;
+                }
+                if(!found && textNodes.length > 0) {
+                    const last = textNodes[textNodes.length-1];
+                    newRange.setStart(last, last.length);
+                    newRange.collapse(true);
+                }
+                selection.removeAllRanges();
+                selection.addRange(newRange);
+            }
+        }
+
+        function cleanFormula(s) {
+            return s ? s.replace(/<[^>]*>/g, '').replace(/\s/g, '').toLowerCase() : "";
+        }
+
+        function createTriple(id) {
+            return `
+                <div class="input-triple">
+                    <input type="number" id="${id}-v" class="val-box" step="0.001">
+                    <input type="text" id="${id}-u" class="unit-box">
+                    <div contenteditable="true" id="${id}-l" class="label-box formula-input" oninput="handleFormulaInput(this)"></div>
+                </div>
+            `;
+        }
+
+        function init() {
+            // Randomize Problem 1 (Moles to Mass)
+            const r1Idx = Math.floor(Math.random() * reactionLibrary.length);
+            const r1 = JSON.parse(JSON.stringify(reactionLibrary[r1Idx]));
+            const s1 = Math.floor(Math.random() * r1.equation.length);
+            let t1 = Math.floor(Math.random() * r1.equation.length);
+            while(t1 === s1) t1 = Math.floor(Math.random() * r1.equation.length);
+            state.p1 = {...r1, given: (Math.random() * 20 + 2).toFixed(3), mode: 'molesToMass', sIdx: s1, tIdx: t1};
+
+            // Randomize Problem 2 (Mass to Moles)
+            let r2Idx = Math.floor(Math.random() * reactionLibrary.length);
+            const r2 = JSON.parse(JSON.stringify(reactionLibrary[r2Idx]));
+            const s2 = Math.floor(Math.random() * r2.equation.length);
+            let t2 = Math.floor(Math.random() * r2.equation.length);
+            while(t2 === s2) t2 = Math.floor(Math.random() * r2.equation.length);
+            state.p2 = {...r2, given: (Math.random() * 100 + 10).toFixed(3), mode: 'massToMoles', sIdx: s2, tIdx: t2};
+
+            renderProblem('p1');
+            renderProblem('p2');
+        }
+
+        function renderProblem(pid) {
+            const data = state[pid];
+            const eqDiv = document.getElementById(`${pid}-equation`);
+            const split = Math.floor(data.equation.length/2);
+            eqDiv.innerHTML = ""; 
+            data.equation.forEach((formula, i) => {
+                if(i === split) eqDiv.innerHTML += `<span class="px-2 font-bold">→</span>`;
+                else if(i > 0) eqDiv.innerHTML += `<span class="px-1">+</span>`;
+                eqDiv.innerHTML += `<input type="number" id="${pid}-c${i}" class="w-8 font-bold text-center border-b"> <span>${formatSub(formula)}</span>`;
+            });
+
+            const ratioDiv = document.getElementById(`${pid}-ratios`);
+            ratioDiv.innerHTML = "";
+            for(let i=0; i<data.equation.length; i++) {
+                for(let j=0; j<data.equation.length; j++) {
+                    if(i===j) continue;
+                    ratioDiv.innerHTML += `
+                        <div class="ratio-box text-xs flex flex-col items-center">
+                            <div class="flex items-center gap-1">
+                                <input type="number" id="${pid}-r-${i}-${j}-n" class="ratio-input">
+                                <span>mol ${formatSub(data.equation[i])}</span>
+                            </div>
+                            <div class="w-full h-px bg-gray-400 my-1"></div>
+                            <div class="flex items-center gap-1">
+                                <input type="number" id="${pid}-r-${i}-${j}-d" class="ratio-input">
+                                <span>mol ${formatSub(data.equation[j])}</span>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            const target = data.equation[data.tIdx];
+            const source = data.equation[data.sIdx];
+            document.getElementById(`${pid}-prompt`).innerHTML = data.mode === 'molesToMass' 
+                ? `Calculation: How many grams of ${formatSub(target)} are produced/needed from ${data.given} moles of ${formatSub(source)}?`
+                : `Calculation: How many moles of ${formatSub(target)} are involved if starting with ${data.given} grams of ${formatSub(source)}?`;
+
+            const mmFormula = data.mode === 'molesToMass' ? target : source;
+            const mmData = data.molarMasses[mmFormula];
+            const mmContainer = document.getElementById(`${pid}-mm-container`);
+            mmContainer.innerHTML = `
+                <p class="font-bold mb-2">Molar Mass of ${formatSub(mmFormula)}:</p>
+                <table class="mm-table">
+                    <tbody id="${pid}-mm-body"></tbody>
+                    <tfoot>
+                        <tr class="font-bold bg-gray-100">
+                            <td colspan="4" class="text-right">Total Molar Mass:</td>
+                            <td><input type="number" id="${pid}-mm-total-v" class="w-20 font-bold" step="0.01"> <input type="text" id="${pid}-mm-total-u" class="w-16 font-bold text-center"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            `;
+            const tbody = document.getElementById(`${pid}-mm-body`);
+            mmData.parts.forEach((p, idx) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="font-bold bg-gray-50">${formatSub(p.n)}</td>
+                        <td><input type="number" id="${pid}-mm-p${idx}-w" class="w-16 border" step="0.01"> <input type="text" id="${pid}-mm-p${idx}-u" class="w-12 border text-xs"></td>
+                        <td>×</td>
+                        <td><input type="number" id="${pid}-mm-p${idx}-c" class="w-10 border"></td>
+                        <td>= <input type="number" id="${pid}-mm-p${idx}-t" class="w-20 border font-bold" step="0.01"> <input type="text" id="${pid}-mm-p${idx}-tu" class="w-12 border text-xs"></td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById(`${pid}-tracks`).innerHTML = `
+                <div class="railroad-cell">${createTriple(`${pid}-t0-n`)}<div class="divider"></div><div class="cell-disabled"></div></div>
+                <div class="railroad-cell">${createTriple(`${pid}-t1-n`)}<div class="divider"></div>${createTriple(`${pid}-t1-d`)}</div>
+                <div class="railroad-cell">${createTriple(`${pid}-t2-n`)}<div class="divider"></div>${createTriple(`${pid}-t2-d`)}</div>
+            `;
+            document.getElementById(`${pid}-ans-container`).innerHTML = `
+                <div class="input-triple scale-110 origin-left">
+                    <input type="number" id="${pid}-ans-v" class="val-box" step="0.001">
+                    <input type="text" id="${pid}-ans-u" class="unit-box">
+                    <div contenteditable="true" id="${pid}-ans-l" class="label-box formula-input" oninput="handleFormulaInput(this)"></div>
+                </div>
+            `;
+        }
+
+        function checkProblem(pid) {
+            const data = state[pid];
+            let score = 0, total = 0;
+            const setStyle = (id, isCorrect) => {
+                const el = document.getElementById(id);
+                if(!el) return;
+                el.classList.remove('correct-box', 'incorrect-box');
+                el.classList.add(isCorrect ? 'correct-box' : 'incorrect-box');
+                if(isCorrect) score++;
+                total++;
+            };
+            const compareUnits = (a, e) => {
+                const u = a.trim().toLowerCase(), ex = e.trim().toLowerCase();
+                return ex === 'mol' ? (u === 'mol' || u === 'moles') : (ex === 'g' ? (u === 'g' || u === 'grams') : u === ex);
+            };
+            const checkTriple = (baseId, expV, expU, expL) => {
+                const v = parseFloat(document.getElementById(`${baseId}-v`).value);
+                const u = document.getElementById(`${baseId}-u`).value;
+                const l = cleanFormula(document.getElementById(`${baseId}-l`).innerText);
+                setStyle(`${baseId}-v`, Math.abs(v - expV) < (expV * 0.02 || 0.1));
+                setStyle(`${baseId}-u`, compareUnits(u, expU));
+                setStyle(`${baseId}-l`, l === cleanFormula(expL));
+            };
+
+            data.coeffs.forEach((c, i) => setStyle(`${pid}-c${i}`, parseInt(document.getElementById(`${pid}-c${i}`).value) === c));
+            setStyle(`${pid}-type`, document.getElementById(`${pid}-type`).value === data.type);
+
+            for(let i=0; i<data.equation.length; i++) {
+                for(let j=0; j<data.equation.length; j++) {
+                    if(i===j) continue;
+                    setStyle(`${pid}-r-${i}-${j}-n`, parseInt(document.getElementById(`${pid}-r-${i}-${j}-n`).value) === data.coeffs[i]);
+                    setStyle(`${pid}-r-${i}-${j}-d`, parseInt(document.getElementById(`${pid}-r-${i}-${j}-d`).value) === data.coeffs[j]);
+                }
+            }
+
+            const mmFormulaStr = data.mode === 'molesToMass' ? data.equation[data.tIdx] : data.equation[data.sIdx];
+            const mmData = data.molarMasses[mmFormulaStr];
+            mmData.parts.forEach((p, idx) => {
+                setStyle(`${pid}-mm-p${idx}-w`, Math.abs(parseFloat(document.getElementById(`${pid}-mm-p${idx}-w`).value) - p.w) < 0.1);
+                setStyle(`${pid}-mm-p${idx}-c`, parseInt(document.getElementById(`${pid}-mm-p${idx}-c`).value) === p.c);
+                setStyle(`${pid}-mm-p${idx}-t`, Math.abs(parseFloat(document.getElementById(`${pid}-mm-p${idx}-t`).value) - (p.w * p.c)) < 0.1);
+            });
+            setStyle(`${pid}-mm-total-v`, Math.abs(parseFloat(document.getElementById(`${pid}-mm-total-v`).value) - mmData.total) < 0.5);
+
+            const target = data.equation[data.tIdx], source = data.equation[data.sIdx];
+            if(data.mode === 'molesToMass') {
+                checkTriple(`${pid}-t0-n`, data.given, 'mol', source);
+                checkTriple(`${pid}-t1-n`, data.coeffs[data.tIdx], 'mol', target);
+                checkTriple(`${pid}-t1-d`, data.coeffs[data.sIdx], 'mol', source);
+                checkTriple(`${pid}-t2-n`, mmData.total, 'g', target);
+                checkTriple(`${pid}-t2-d`, 1, 'mol', target);
+            } else {
+                checkTriple(`${pid}-t0-n`, data.given, 'g', source);
+                checkTriple(`${pid}-t1-n`, 1, 'mol', source);
+                checkTriple(`${pid}-t1-d`, mmData.total, 'g', source);
+                checkTriple(`${pid}-t2-n`, data.coeffs[data.tIdx], 'mol', target);
+                checkTriple(`${pid}-t2-d`, data.coeffs[data.sIdx], 'mol', source);
+            }
+
+            const expectedVal = data.mode === 'molesToMass' 
+                ? data.given * (data.coeffs[data.tIdx] / data.coeffs[data.sIdx]) * mmData.total
+                : (data.given / mmData.total) * (data.coeffs[data.tIdx] / data.coeffs[data.sIdx]);
+            checkTriple(`${pid}-ans`, expectedVal, data.mode === 'molesToMass' ? 'g' : 'mol', target);
+
+            const fb = document.getElementById(`${pid}-feedback`);
+            fb.style.display = 'block';
+            fb.className = score === total ? "feedback bg-green-100 text-green-800 border-2" : "feedback bg-red-100 text-red-800 border-2";
+            fb.innerHTML = score === total ? "✅ Correct! Total score: " + score + "/" + total : "❌ Mistakes found. Correct inputs: " + score + "/" + total;
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
