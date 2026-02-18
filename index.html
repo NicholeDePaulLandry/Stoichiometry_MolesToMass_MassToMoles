@@ -223,6 +223,7 @@
                 coeffs: [1, 3, 2, 3],
                 type: 'Double Replacement',
                 molarMasses: { 
+                    'Cr2O3': { total: 151.99, parts: [{n: 'Cr', c: 2, w: 52.00}, {n: 'O', c: 3, w: 16.00}] },
                     'Ca(OH)2': { total: 74.1, parts: [{n: 'Ca', c: 1, w: 40.08}, {n: 'O', c: 2, w: 16.00}, {n: 'H', c: 2, w: 1.01}] },
                     'Cr(OH)3': { total: 103.02, parts: [{n: 'Cr', c: 1, w: 52.00}, {n: 'O', c: 3, w: 16.00}, {n: 'H', c: 3, w: 1.01}] },
                     'CaO': { total: 56.08, parts: [{n: 'Ca', c: 1, w: 40.08}, {n: 'O', c: 1, w: 16.00}] }
@@ -394,39 +395,44 @@
             const mmFormula = data.mode === 'molesToMass' ? target : source;
             const mmData = data.molarMasses[mmFormula];
             const mmContainer = document.getElementById(`${pid}-mm-container`);
-            mmContainer.innerHTML = `
-                <p class="font-bold mb-4 text-lg">Molar Mass Worksheet for ${formatSub(mmFormula)}:</p>
-                <table class="mm-table">
-                    <thead>
-                        <tr class="bg-gray-100">
-                            <th>Element</th>
-                            <th>Atomic Mass</th>
-                            <th></th>
-                            <th>Count</th>
-                            <th>Total Mass</th>
-                        </tr>
-                    </thead>
-                    <tbody id="${pid}-mm-body"></tbody>
-                    <tfoot>
-                        <tr class="font-bold bg-gray-100">
-                            <td colspan="4" class="text-right">Molecular Weight:</td>
-                            <td><input type="number" id="${pid}-mm-total-v" class="w-24 font-bold border-b text-center" step="0.01"> <input type="text" id="${pid}-mm-total-u" class="w-16 font-bold text-center border-b"></td>
-                        </tr>
-                    </tfoot>
-                </table>
-            `;
-            const tbody = document.getElementById(`${pid}-mm-body`);
-            mmData.parts.forEach((p, idx) => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td class="font-bold bg-gray-50">${formatSub(p.n)}</td>
-                        <td><input type="number" id="${pid}-mm-p${idx}-w" class="w-20 border text-center" step="0.01"> <input type="text" id="${pid}-mm-p${idx}-u" class="w-14 border text-center text-sm"></td>
-                        <td>×</td>
-                        <td><input type="number" id="${pid}-mm-p${idx}-c" class="w-14 border text-center"></td>
-                        <td>= <input type="number" id="${pid}-mm-p${idx}-t" class="w-24 border font-bold text-center" step="0.01"> <input type="text" id="${pid}-mm-p${idx}-tu" class="w-14 border text-center text-sm"></td>
-                    </tr>
+            
+            if (mmData) {
+                mmContainer.innerHTML = `
+                    <p class="font-bold mb-4 text-lg">Molar Mass Worksheet for ${formatSub(mmFormula)}:</p>
+                    <table class="mm-table">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th>Element</th>
+                                <th>Atomic Mass</th>
+                                <th></th>
+                                <th>Count</th>
+                                <th>Total Mass</th>
+                            </tr>
+                        </thead>
+                        <tbody id="${pid}-mm-body"></tbody>
+                        <tfoot>
+                            <tr class="font-bold bg-gray-100">
+                                <td colspan="4" class="text-right">Molecular Weight:</td>
+                                <td><input type="number" id="${pid}-mm-total-v" class="w-24 font-bold border-b text-center" step="0.01"> <input type="text" id="${pid}-mm-total-u" class="w-16 font-bold text-center border-b"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
                 `;
-            });
+                const tbody = document.getElementById(`${pid}-mm-body`);
+                mmData.parts.forEach((p, idx) => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td class="font-bold bg-gray-50">${formatSub(p.n)}</td>
+                            <td><input type="number" id="${pid}-mm-p${idx}-w" class="w-20 border text-center" step="0.01"> <input type="text" id="${pid}-mm-p${idx}-u" class="w-14 border text-center text-sm"></td>
+                            <td>×</td>
+                            <td><input type="number" id="${pid}-mm-p${idx}-c" class="w-14 border text-center"></td>
+                            <td>= <input type="number" id="${pid}-mm-p${idx}-t" class="w-24 border font-bold text-center" step="0.01"> <input type="text" id="${pid}-mm-p${idx}-tu" class="w-14 border text-center text-sm"></td>
+                        </tr>
+                    `;
+                });
+            } else {
+                mmContainer.innerHTML = `<p class="text-red-500">Molar mass data missing for ${mmFormula}. Please regenerate.</p>`;
+            }
 
             document.getElementById(`${pid}-tracks`).innerHTML = `
                 <div class="railroad-cell">${createTriple(`${pid}-t0-n`)}<div class="divider"></div><div class="cell-disabled"></div></div>
@@ -454,7 +460,7 @@
                 total++;
             };
             const compareUnits = (a, e) => {
-                const u = a.trim().toLowerCase(), ex = e.trim().toLowerCase();
+                const u = (a || "").trim().toLowerCase(), ex = (e || "").trim().toLowerCase();
                 return ex === 'mol' ? (u === 'mol' || u === 'moles') : (ex === 'g' ? (u === 'g' || u === 'grams') : u === ex);
             };
             const checkTriple = (baseId, expV, expU, expL) => {
@@ -484,31 +490,34 @@
 
             const mmFormulaStr = data.mode === 'molesToMass' ? data.equation[data.tIdx] : data.equation[data.sIdx];
             const mmData = data.molarMasses[mmFormulaStr];
-            mmData.parts.forEach((p, idx) => {
-                setStyle(`${pid}-mm-p${idx}-w`, Math.abs(parseFloat(document.getElementById(`${pid}-mm-p${idx}-w`).value) - p.w) < 0.1);
-                setStyle(`${pid}-mm-p${idx}-c`, parseInt(document.getElementById(`${pid}-mm-p${idx}-c`).value) === p.c);
-                setStyle(`${pid}-mm-p${idx}-t`, Math.abs(parseFloat(document.getElementById(`${pid}-mm-p${idx}-t`).value) - (p.w * p.c)) < 0.1);
-            });
-            setStyle(`${pid}-mm-total-v`, Math.abs(parseFloat(document.getElementById(`${pid}-mm-total-v`).value) - mmData.total) < 0.5);
+            if (mmData) {
+                mmData.parts.forEach((p, idx) => {
+                    setStyle(`${pid}-mm-p${idx}-w`, Math.abs(parseFloat(document.getElementById(`${pid}-mm-p${idx}-w`).value) - p.w) < 0.1);
+                    setStyle(`${pid}-mm-p${idx}-c`, parseInt(document.getElementById(`${pid}-mm-p${idx}-c`).value) === p.c);
+                    setStyle(`${pid}-mm-p${idx}-t`, Math.abs(parseFloat(document.getElementById(`${pid}-mm-p${idx}-t`).value) - (p.w * p.c)) < 0.1);
+                });
+                setStyle(`${pid}-mm-total-v`, Math.abs(parseFloat(document.getElementById(`${pid}-mm-total-v`).value) - mmData.total) < 0.5);
+            }
 
             const target = data.equation[data.tIdx], source = data.equation[data.sIdx];
             if(data.mode === 'molesToMass') {
                 checkTriple(`${pid}-t0-n`, data.given, 'mol', source);
                 checkTriple(`${pid}-t1-n`, data.coeffs[data.tIdx], 'mol', target);
                 checkTriple(`${pid}-t1-d`, data.coeffs[data.sIdx], 'mol', source);
-                checkTriple(`${pid}-t2-n`, mmData.total, 'g', target);
+                checkTriple(`${pid}-t2-n`, mmData ? mmData.total : 0, 'g', target);
                 checkTriple(`${pid}-t2-d`, 1, 'mol', target);
             } else {
                 checkTriple(`${pid}-t0-n`, data.given, 'g', source);
                 checkTriple(`${pid}-t1-n`, 1, 'mol', source);
-                checkTriple(`${pid}-t1-d`, mmData.total, 'g', source);
+                checkTriple(`${pid}-t1-d`, mmData ? mmData.total : 0, 'g', source);
                 checkTriple(`${pid}-t2-n`, data.coeffs[data.tIdx], 'mol', target);
                 checkTriple(`${pid}-t2-d`, data.coeffs[data.sIdx], 'mol', source);
             }
 
+            const mw = mmData ? mmData.total : 1;
             const expectedVal = data.mode === 'molesToMass' 
-                ? data.given * (data.coeffs[data.tIdx] / data.coeffs[data.sIdx]) * mmData.total
-                : (data.given / mmData.total) * (data.coeffs[data.tIdx] / data.coeffs[data.sIdx]);
+                ? data.given * (data.coeffs[data.tIdx] / data.coeffs[data.sIdx]) * mw
+                : (data.given / mw) * (data.coeffs[data.tIdx] / data.coeffs[data.sIdx]);
             checkTriple(`${pid}-ans`, expectedVal, data.mode === 'molesToMass' ? 'g' : 'mol', target);
 
             const fb = document.getElementById(`${pid}-feedback`);
